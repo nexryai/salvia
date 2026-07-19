@@ -136,6 +136,51 @@ proof of authorization.
 `actor.create` is account-scoped and therefore omits `actor_id`. Rosmarinus
 assigns the authenticated account as the new Actor's owner.
 
+## UI and Application Architecture
+
+- Use the sibling `./misskey` directory as the visual reference and make the
+  UI components look and behave close to their Misskey counterparts. Do not
+  copy federation or backend behavior merely because it exists in Misskey.
+- Aim for a substantially simplified Misskey experience. Do not implement
+  advanced features such as widgets or Deck unless they are separately added
+  to the product scope.
+- Use Tailwind CSS for application styling.
+- Extract reusable UI primitives into `./src/components/ui` and reusable
+  application components into `./src/components` whenever a component has a
+  coherent responsibility. Avoid leaving reusable components embedded in
+  pages or feature routes.
+- Use Next.js server-side rendering for initial, session-aware, and
+  MongoDB-backed views. Add client components only where browser APIs or
+  interactive state require them, and keep those client boundaries narrow.
+- Use `pnpm` commands to add, remove, or update packages and commit the
+  resulting `pnpm-lock.yaml` changes.
+
+The sibling `./rosmarinus` directory may be inspected to understand data and
+integration contracts, but it must not be edited as part of Salvia work.
+Rosmarinus Users/Salvia accounts and Rosmarinus Actors are distinct concepts:
+an authenticated user account may own multiple Actors. UI naming, routes,
+session state, and authorization checks must preserve that distinction.
+
+## Passkey-Only Authentication
+
+- Authenticate users exclusively with passkeys (WebAuthn). Do not implement
+  passwords, password reset flows, password-derived credentials, or TOTP.
+- When no user account exists, expose a one-time initial administrator setup.
+  After the administrator chooses a username, immediately require successful
+  passkey registration before completing account creation and establishing the
+  session.
+- Enforce initial-setup eligibility and account creation on the server with an
+  atomic uniqueness/initialization guard so concurrent requests cannot create
+  multiple initial administrators.
+- Once at least one user is registered, close public registration and expose
+  login only. Do not rely on a hidden client-side registration route for this
+  restriction.
+- Keep WebAuthn challenges short-lived, single-use, bound to the intended
+  ceremony and session, and verified server-side. Derive relying-party and
+  origin settings from validated server configuration.
+- Store passkey credential material in Salvia-owned collections. Never place
+  authentication credential data on a Rosmarinus Actor document.
+
 ## Ably Authentication and Authorization
 
 Only the Salvia backend may issue browser Ably credentials. The token endpoint
@@ -267,6 +312,12 @@ delete the account's Actors as part of this flow.
 
 ## Git Workflow
 
+- Commit changes frequently at small, appropriate implementation boundaries.
+  Do not accumulate multiple independently verifiable changes into one large
+  commit when they can be reviewed and committed separately.
+- Each commit must remain coherent and complete: include its focused tests and
+  related documentation, and do not commit a knowingly broken intermediate
+  state merely to increase commit frequency.
 - Make commits at coherent implementation checkpoints after verification
   passes. Do not mix unrelated or unfinished changes into a commit.
 - Before every Salvia commit, run these commands in this exact order:

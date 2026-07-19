@@ -44,6 +44,17 @@ No Salvia-to-Rosmarinus HTTP, RPC, or gRPC API
   duplicated, delayed, or missed by a disconnected browser.
 - Account removal is soft deletion. Salvia does not cascade deletion into
   Rosmarinus collections.
+- Passkeys are the only user authentication method. Passwords and TOTP are out
+  of scope.
+- The empty installation exposes one-time administrator setup; after the first
+  account is registered, only login is publicly available.
+- The UI uses Tailwind CSS, follows the visual language of `./misskey`, and
+  targets a substantially simplified Misskey without widgets or Deck.
+- Next.js server-side rendering is the default for initial and data-backed
+  views; client components are limited to browser-only or interactive areas.
+- Salvia users/accounts and Rosmarinus Actors remain separate concepts in the
+  data model and UI.
+- Dependencies are managed only with `pnpm`.
 
 ## Phase 0: Establish the Salvia Repository Baseline
 
@@ -51,6 +62,14 @@ No Salvia-to-Rosmarinus HTTP, RPC, or gRPC API
 - [ ] Inspect Salvia's current Next.js version, routing mode, authentication
       library, MongoDB access layer, validation library, logging conventions,
       and test framework.
+- [ ] Inspect `./misskey` for reusable visual patterns, layout, spacing,
+      typography, colors, navigation, forms, dialogs, and timeline items.
+      Treat it as a design reference rather than an application architecture
+      or federation implementation to copy.
+- [ ] Inspect `./rosmarinus` only as needed to confirm integration schemas and
+      the User/account-versus-Actor boundary; do not edit it.
+- [ ] Confirm Tailwind CSS is configured. Use `pnpm` for every dependency
+      addition, removal, or update.
 - [ ] Confirm `pnpm format`, `pnpm lint`, and `pnpm build` exist and are the
       repository's pre-commit verification commands.
 - [ ] Document which existing authentication record maps to the stable local
@@ -64,7 +83,68 @@ No Salvia-to-Rosmarinus HTTP, RPC, or gRPC API
 Exit criteria: the existing auth and data architecture is documented, required
 scripts run, and no Rosmarinus source code has been introduced into Salvia.
 
-## Phase 1: Add the Salvia-Owned Account Authorization Projection
+## Phase 1: Implement Passkey-Only Bootstrap and Authentication
+
+- [ ] Define Salvia-owned user, passkey credential, WebAuthn challenge, and
+      session repositories with narrow interfaces and runtime validation.
+- [ ] Add validated server configuration for the WebAuthn relying-party ID,
+      relying-party name, and allowed origin(s).
+- [ ] Render a server-derived initial setup page only when no user exists.
+- [ ] In initial setup, collect the administrator username and immediately
+      start passkey registration. Do not complete the administrator account or
+      create a logged-in session until WebAuthn attestation succeeds.
+- [ ] Make the first-user decision and administrator creation concurrency-safe
+      with a database-enforced atomic guard so two setup attempts cannot create
+      two initial administrators.
+- [ ] Once any user exists, reject registration and setup endpoints on the
+      server and render only passkey login to unauthenticated visitors.
+- [ ] Implement passkey authentication with short-lived, single-use,
+      ceremony-bound challenges and server-side origin, RP ID, signature,
+      counter, and user verification checks as supported by the chosen
+      WebAuthn library and authenticator.
+- [ ] Do not add password hashes, password reset, recovery passwords, TOTP
+      secrets, or password/TOTP UI.
+- [ ] Establish the Salvia session only after successful passkey verification,
+      and rotate/invalidate it according to the existing session policy.
+- [ ] Keep all credential and challenge records in Salvia-owned collections;
+      do not store them on Rosmarinus Actor documents.
+- [ ] Add tests for empty-install bootstrap, successful administrator passkey
+      registration, failed/expired/replayed challenges, concurrent bootstrap
+      attempts, closed registration after the first user, login, and logout.
+
+Exit criteria: a fresh installation can create exactly one initial
+administrator with a passkey, and every non-empty installation offers
+passkey login but no public registration, password, or TOTP path.
+
+## Phase 2: Establish the Simplified Misskey UI Foundation
+
+- [ ] Configure Tailwind CSS and define design tokens based on the visual
+      patterns observed in `./misskey`, while keeping Salvia's implementation
+      independent.
+- [ ] Build the responsive application shell, navigation, content column,
+      forms, buttons, cards, dialogs, menus, avatars, and timeline primitives
+      with a Misskey-like appearance.
+- [ ] Put reusable low-level primitives in `./src/components/ui` and reusable
+      domain/application components in `./src/components`. Keep route files
+      focused on composition, data loading, and route-specific behavior.
+- [ ] Target a substantially simplified Misskey: include only product-scoped
+      core navigation and timelines, and omit widgets, Deck, and comparable
+      advanced customization features.
+- [ ] Render initial session-aware and MongoDB-backed state with Next.js SSR.
+      Use server components by default and introduce narrowly scoped client
+      components only for WebAuthn, Ably realtime behavior, and local
+      interactions.
+- [ ] Make account/user identity and selected Actor visibly distinct in the
+      shell and Actor switcher; never label the authenticated account as if it
+      were the active Actor.
+- [ ] Add focused component and accessibility tests for shared primitives,
+      authentication screens, responsive navigation, and Actor selection.
+
+Exit criteria: the application has a responsive, Tailwind-based,
+Misskey-inspired core UI with reusable components, SSR-first rendering, clear
+user/Actor separation, and no widget or Deck implementation.
+
+## Phase 3: Add the Salvia-Owned Account Authorization Projection
 
 - [ ] Implement a `salvia_accounts` repository owned exclusively by Salvia.
 - [ ] Store this required cross-service projection:
@@ -100,7 +180,7 @@ Exit criteria: every authenticated local user has one stable account projection
 and `clientId`; Salvia cannot write Rosmarinus-owned collections with its normal
 runtime credentials.
 
-## Phase 2: Implement the Browser Ably Token Endpoint
+## Phase 4: Implement the Browser Ably Token Endpoint
 
 - [ ] Define server-only environment variables, with names equivalent to:
 
@@ -142,7 +222,7 @@ runtime credentials.
 Exit criteria: an active session can connect only as its stored `clientId`,
 publish commands, and subscribe only to its own account event channel.
 
-## Phase 3: Build the Browser Realtime Layer
+## Phase 5: Build the Browser Realtime Layer
 
 - [ ] Create one lifecycle-managed Ably client/provider per authenticated
       account using `authUrl` or `authCallback` so the SDK renews credentials.
@@ -166,7 +246,7 @@ publish commands, and subscribe only to its own account event channel.
 Exit criteria: browser connection and renewal work without exposing secrets,
 and ambiguous network outcomes recover through idempotent retry and DB refresh.
 
-## Phase 4: Implement Multi-Actor Account UX
+## Phase 6: Implement Multi-Actor Account UX
 
 - [ ] Add a read-only Rosmarinus Actor repository that lists local Actors by
       `ownerAccountId` for the authenticated account.
@@ -200,7 +280,7 @@ and ambiguous network outcomes recover through idempotent retry and DB refresh.
 Exit criteria: one local account can create, list, select, and operate multiple
 Actors while Rosmarinus remains the authority for Actor lifecycle and ownership.
 
-## Phase 5: Implement Versioned Command Publishers
+## Phase 7: Implement Versioned Command Publishers
 
 - [ ] Centralize the version 1 command envelope:
 
@@ -240,7 +320,7 @@ Actors while Rosmarinus remains the authority for Actor lifecycle and ownership.
 Exit criteria: each supported UI mutation becomes a typed, validated,
 idempotently retryable Ably command and never a direct database write.
 
-## Phase 6: Implement Versioned Event Consumers
+## Phase 8: Implement Versioned Event Consumers
 
 - [ ] Validate this version 1 event envelope at runtime:
 
@@ -273,7 +353,7 @@ idempotently retryable Ably command and never a direct database write.
 Exit criteria: supported events update the UI promptly, while reconnect and
 duplicate scenarios converge on the MongoDB source of truth.
 
-## Phase 7: Implement Account Authorization Invalidation
+## Phase 9: Implement Account Authorization Invalidation
 
 - [ ] Add a server-only Ably REST publisher for
       `rosmarinus:control:accounts` using `ABLY_CONTROL_API_KEY`.
@@ -303,7 +383,7 @@ duplicate scenarios converge on the MongoDB source of truth.
 Exit criteria: the durable account state changes first, credential issuance
 stops, and Rosmarinus receives low-latency invalidation without an HTTP call.
 
-## Phase 8: Build Read-Only Federation Views
+## Phase 10: Build Read-Only Federation Views
 
 - [ ] Enumerate the Rosmarinus collections and fields each Salvia screen needs;
       use explicit projections rather than passing raw documents to the
@@ -322,7 +402,7 @@ stops, and Rosmarinus receives low-latency invalidation without an HTTP call.
 Exit criteria: UI queries are account-scoped, indexed, projection-based, and
 enforced as read-only at the database permission boundary.
 
-## Phase 9: End-to-End Contract Verification
+## Phase 11: End-to-End Contract Verification
 
 - [ ] Test authenticated token issuance through a real Salvia session.
 - [ ] Test browser command -> Ably -> Rosmarinus -> MongoDB -> account event ->
@@ -343,7 +423,7 @@ enforced as read-only at the database permission boundary.
 Exit criteria: identity, authorization, idempotency, ownership, reconnect, and
 collection-writer boundaries are verified in realistic flows.
 
-## Phase 10: Operations and Rollout
+## Phase 12: Operations and Rollout
 
 - [ ] Add structured logs and metrics keyed by safe account/Actor identifiers
       and `request_id`; never record tokens, API keys, session cookies, or full
@@ -388,6 +468,13 @@ Rosmarinus change in its own repository before depending on it from Salvia.
 - [ ] Runtime configuration comes from validated environment variables.
 - [ ] Focused tests cover the changed identity, authorization, or event path.
 - [ ] No secrets or tokens are present in client bundles or logs.
+- [ ] Authentication remains passkey-only, and registration stays closed after
+      the initial administrator is registered.
+- [ ] Reusable UI is factored into `src/components/ui` or `src/components`,
+      uses Tailwind CSS, and preserves the user/account-versus-Actor boundary.
+- [ ] Data-backed initial views use SSR unless a documented browser-only
+      requirement prevents it.
+- [ ] Package changes were made with `pnpm` and the lockfile is coherent.
 - [ ] `pnpm format` passes.
 - [ ] `pnpm lint` passes.
 - [ ] `pnpm build` passes.
