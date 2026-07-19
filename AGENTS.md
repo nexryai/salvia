@@ -145,6 +145,8 @@ assigns the authenticated account as the new Actor's owner.
   advanced features such as widgets or Deck unless they are separately added
   to the product scope.
 - Use Tailwind CSS for application styling.
+- Use Tabler Icons for interface icons. Reuse icons from the Tabler set instead
+  of drawing project-specific SVG icons when an appropriate Tabler icon exists.
 - Extract reusable UI primitives into `./src/components/ui` and reusable
   application components into `./src/components` whenever a component has a
   coherent responsibility. Avoid leaving reusable components embedded in

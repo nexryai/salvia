@@ -50,6 +50,7 @@ No Salvia-to-Rosmarinus HTTP, RPC, or gRPC API
   account is registered, only login is publicly available.
 - The UI uses Tailwind CSS, follows the visual language of `./misskey`, and
   targets a substantially simplified Misskey without widgets or Deck.
+- Interface icons use Tabler Icons for a consistent visual language.
 - Next.js server-side rendering is the default for initial and data-backed
   views; client components are limited to browser-only or interactive areas.
 - Salvia users/accounts and Rosmarinus Actors remain separate concepts in the
@@ -121,6 +122,8 @@ passkey login but no public registration, password, or TOTP path.
 - [ ] Configure Tailwind CSS and define design tokens based on the visual
       patterns observed in `./misskey`, while keeping Salvia's implementation
       independent.
+- [ ] Add Tabler Icons through `pnpm` and use its icon set throughout shared
+      navigation, actions, forms, and status UI instead of bespoke SVGs.
 - [ ] Build the responsive application shell, navigation, content column,
       forms, buttons, cards, dialogs, menus, avatars, and timeline primitives
       with a Misskey-like appearance.
@@ -472,6 +475,8 @@ Rosmarinus change in its own repository before depending on it from Salvia.
       the initial administrator is registered.
 - [ ] Reusable UI is factored into `src/components/ui` or `src/components`,
       uses Tailwind CSS, and preserves the user/account-versus-Actor boundary.
+- [ ] Interface icons come from Tabler Icons unless a documented product-specific
+      mark has no suitable Tabler equivalent.
 - [ ] Data-backed initial views use SSR unless a documented browser-only
       requirement prevents it.
 - [ ] Package changes were made with `pnpm` and the lockfile is coherent.
