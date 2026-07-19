@@ -2,8 +2,8 @@ import Link from "next/link";
 
 import { IconBell, IconChevronRight, IconHome, IconPlus, IconSettings, IconSparkles, IconUser } from "@tabler/icons-react";
 
-import { Avatar } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
 
 const items = [
     { href: "/", icon: IconHome, label: "タイムライン" },
@@ -16,7 +16,7 @@ export function AppNavigation() {
     return (
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-divider border-r bg-nav px-5 py-6 lg:flex lg:flex-col">
             <Link className="mb-8 flex items-center gap-3 px-3 font-bold text-xl tracking-tight" href="/">
-                <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-accent to-fuchsia-500 text-white shadow-lg shadow-accent/20">
+                <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent-strong text-accent-ink shadow-lg shadow-accent/20">
                     <IconSparkles className="size-5" />
                 </span>
                 Salvia

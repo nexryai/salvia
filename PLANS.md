@@ -50,6 +50,10 @@ No Salvia-to-Rosmarinus HTTP, RPC, or gRPC API
   account is registered, only login is publicly available.
 - The UI uses Tailwind CSS, follows the visual language of `./misskey`, and
   targets a substantially simplified Misskey without widgets or Deck.
+- The default theme is yellow-based. Authenticated users can choose another
+  supported theme in settings, persisted in Salvia-owned UI settings.
+- Notes display custom emoji reactions rather than a generic like/favorite.
+- Timelines update in real time from Ably events and reconcile with MongoDB.
 - Interface icons use Tabler Icons for a consistent visual language.
 - Next.js server-side rendering is the default for initial and data-backed
   views; client components are limited to browser-only or interactive areas.
@@ -122,6 +126,8 @@ passkey login but no public registration, password, or TOTP path.
 - [ ] Configure Tailwind CSS and define design tokens based on the visual
       patterns observed in `./misskey`, while keeping Salvia's implementation
       independent.
+- [ ] Make the default design tokens yellow-based and define supported theme
+      palettes behind the same semantic tokens.
 - [ ] Add Tabler Icons through `pnpm` and use its icon set throughout shared
       navigation, actions, forms, and status UI instead of bespoke SVGs.
 - [ ] Build the responsive application shell, navigation, content column,
@@ -130,6 +136,8 @@ passkey login but no public registration, password, or TOTP path.
 - [ ] Put reusable low-level primitives in `./src/components/ui` and reusable
       domain/application components in `./src/components`. Keep route files
       focused on composition, data loading, and route-specific behavior.
+- [ ] Name component files in PascalCase (`HogeFuge.tsx`), except for filenames
+      mandated by Next.js routing conventions.
 - [ ] Target a substantially simplified Misskey: include only product-scoped
       core navigation and timelines, and omit widgets, Deck, and comparable
       advanced customization features.
@@ -140,6 +148,11 @@ passkey login but no public registration, password, or TOTP path.
 - [ ] Make account/user identity and selected Actor visibly distinct in the
       shell and Actor switcher; never label the authenticated account as if it
       were the active Actor.
+- [ ] Render note reactions as custom emoji chips with counts and reacted
+      state. Do not render a generic like, heart, or favorite action.
+- [ ] Add a theme settings screen that persists the authenticated user's choice
+      in `salvia_ui_settings`; apply the selected theme during SSR to avoid a
+      flash of the default theme.
 - [ ] Add focused component and accessibility tests for shared primitives,
       authentication screens, responsive navigation, and Actor selection.
 
@@ -241,6 +254,9 @@ publish commands, and subscribe only to its own account event channel.
       state.
 - [ ] Handle reconnects by re-reading the relevant MongoDB-backed view. Do not
       assume Ably replay restores all missed state.
+- [ ] Invalidate and refresh visible timelines immediately for relevant note,
+      reaction, and deletion events while preserving scroll position and
+      deduplicating notes by their durable ID.
 - [ ] Make event consumption safe across multiple tabs. Deduplicate UI effects
       by event identity/request ID while allowing every tab to refresh state.
 - [ ] Add connection-state, timeout, cancellation, and retry UX without
@@ -475,6 +491,12 @@ Rosmarinus change in its own repository before depending on it from Salvia.
       the initial administrator is registered.
 - [ ] Reusable UI is factored into `src/components/ui` or `src/components`,
       uses Tailwind CSS, and preserves the user/account-versus-Actor boundary.
+- [ ] React component filenames use PascalCase except for Next.js convention
+      files.
+- [ ] The default palette is yellow-based, user theme selection is persisted,
+      and notes use custom emoji reactions rather than generic likes.
+- [ ] Visible timelines receive real-time invalidations and reconcile against
+      MongoDB after reconnects or missed events.
 - [ ] Interface icons come from Tabler Icons unless a documented product-specific
       mark has no suitable Tabler equivalent.
 - [ ] Data-backed initial views use SSR unless a documented browser-only

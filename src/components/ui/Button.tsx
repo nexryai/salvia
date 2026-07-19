@@ -1,11 +1,11 @@
 import type { ButtonHTMLAttributes } from "react";
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
     variant?: "primary" | "secondary" | "ghost";
 };
 
 const variantClasses = {
-    primary: "bg-gradient-to-r from-accent to-accent-strong text-white shadow-[0_6px_18px_rgb(134_93_255/0.25)] hover:-translate-y-0.5 hover:shadow-[0_8px_22px_rgb(134_93_255/0.32)]",
+    primary: "bg-gradient-to-r from-accent to-accent-strong text-accent-ink shadow-[0_6px_18px_rgb(234_179_8/0.24)] hover:-translate-y-0.5 hover:shadow-[0_8px_22px_rgb(234_179_8/0.32)]",
     secondary: "bg-accent-soft text-accent-strong hover:bg-accent-soft-hover",
     ghost: "text-muted hover:bg-panel-highlight hover:text-foreground",
 };

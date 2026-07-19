@@ -1,15 +1,19 @@
 import { IconSearch } from "@tabler/icons-react";
 
-import { AppNavigation, MobileNavigation } from "@/components/app-navigation";
-import { NoteCard } from "@/components/note-card";
-import { Avatar } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { AppNavigation, MobileNavigation } from "@/components/AppNavigation";
+import { NoteCard } from "@/components/NoteCard";
+import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
 
 const notes = [
     {
         actor: "Alice",
         color: "accent" as const,
         handle: "@alice@example.social",
+        reactions: [
+            { emoji: "🌿", count: 8, name: "herb", reacted: true },
+            { emoji: "✨", count: 4, name: "sparkles" },
+        ],
         text: "Salviaへようこそ！\nシンプルで心地よいタイムラインを作っていきます。",
         time: "2分",
     },
@@ -17,6 +21,10 @@ const notes = [
         actor: "Mika",
         color: "warm" as const,
         handle: "@mika@remote.example",
+        reactions: [
+            { emoji: "🌱", count: 12, name: "seedling" },
+            { emoji: "💛", count: 5, name: "yellow_heart" },
+        ],
         text: "今日は庭のハーブを植え替えました 🌿",
         time: "18分",
     },
@@ -24,6 +32,7 @@ const notes = [
         actor: "Sora",
         color: "cool" as const,
         handle: "@sora@example.social",
+        reactions: [{ emoji: "💡", count: 3, name: "bulb" }],
         text: "小さくて速い道具は、使うたびに嬉しくなる。",
         time: "1時間",
     },

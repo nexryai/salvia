@@ -145,15 +145,26 @@ assigns the authenticated account as the new Actor's owner.
   advanced features such as widgets or Deck unless they are separately added
   to the product scope.
 - Use Tailwind CSS for application styling.
+- Use a yellow-based color theme by default. Allow each authenticated user to
+  select another supported theme in settings, and persist that preference in a
+  Salvia-owned UI settings collection rather than a Rosmarinus document.
 - Use Tabler Icons for interface icons. Reuse icons from the Tabler set instead
   of drawing project-specific SVG icons when an appropriate Tabler icon exists.
 - Extract reusable UI primitives into `./src/components/ui` and reusable
   application components into `./src/components` whenever a component has a
   coherent responsibility. Avoid leaving reusable components embedded in
   pages or feature routes.
+- Name React component files in PascalCase, for example `HogeFuge.tsx`. Keep
+  framework-mandated Next.js filenames such as `page.tsx`, `layout.tsx`,
+  `loading.tsx`, `error.tsx`, and `route.ts` as the only naming exceptions.
 - Use Next.js server-side rendering for initial, session-aware, and
   MongoDB-backed views. Add client components only where browser APIs or
   interactive state require them, and keep those client boundaries narrow.
+- Update visible timelines in real time from account-scoped Ably events. Treat
+  events as invalidation hints, reconcile against MongoDB as the source of
+  truth, and preserve the currently visible timeline during reconnects.
+- Display Misskey-style custom emoji reactions on notes. Do not reduce the
+  reaction UI to a generic like, heart, or favorite count.
 - Use `pnpm` commands to add, remove, or update packages and commit the
   resulting `pnpm-lock.yaml` changes.
 

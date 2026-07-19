@@ -1,11 +1,11 @@
-type AvatarProps = {
+export type AvatarProps = {
     name: string;
     color?: "accent" | "warm" | "cool";
     size?: "sm" | "md" | "lg";
 };
 
 const colorClasses = {
-    accent: "from-violet-400 to-fuchsia-500",
+    accent: "from-amber-300 to-yellow-500 text-amber-950",
     warm: "from-orange-300 to-rose-400",
     cool: "from-cyan-300 to-blue-500",
 };
