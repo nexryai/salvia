@@ -12,9 +12,9 @@ const variantClasses = {
     ghost: "text-muted hover:bg-panel-highlight hover:text-foreground active:bg-panel-highlight",
 };
 
-const rippleBaseColor = "rgba(0, 0, 0, 0.1)";
+const rippleShadowRest = "rgba(0, 0, 0, 0.1)";
 
-export function Button({ className = "", type = "button", variant = "primary", onClick, ...props }: ButtonProps) {
+export function Button({ className = "", type = "button", variant = "primary", onMouseDown, ...props }: ButtonProps) {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const ripplesRef = useRef<HTMLDivElement | null>(null);
 
@@ -34,11 +34,11 @@ export function Button({ className = "", type = "button", variant = "primary", o
         return container;
     }, []);
 
-    const handleClick = useCallback(
+    const handleMouseDown = useCallback(
         (e: MouseEvent<HTMLButtonElement>) => {
             const button = buttonRef.current;
             if (!button) {
-                onClick?.(e);
+                onMouseDown?.(e);
                 return;
             }
             const rect = button.getBoundingClientRect();
@@ -60,30 +60,29 @@ export function Button({ className = "", type = "button", variant = "primary", o
             ripple.style.width = "2px";
             ripple.style.height = "2px";
             ripple.style.borderRadius = "100%";
-            ripple.style.background = rippleBaseColor;
-            ripple.style.opacity = "1";
+            ripple.style.background = "transparent";
+            ripple.style.boxShadow = `0 0 0 0 ${rippleShadowRest}`;
             ripple.style.transform = "scale(1)";
             ripple.style.transition = "all 0.5s cubic-bezier(0,.5,0,1)";
 
             ripples.appendChild(ripple);
 
             window.setTimeout(() => {
-                ripple.style.transform = `scale(${scale})`;
+                ripple.style.boxShadow = `0 0 0 ${scale}px transparent`;
             }, 1);
 
             window.setTimeout(() => {
-                ripple.style.transition = "all 1s ease";
-                ripple.style.opacity = "0";
-            }, 1000);
-
-            window.setTimeout(() => {
                 ripple.remove();
-            }, 2000);
+            }, 500);
 
-            onClick?.(e);
+            onMouseDown?.(e);
         },
-        [onClick, ensureRipples],
+        [onMouseDown, ensureRipples],
     );
 
-    return <button ref={buttonRef} className={`relative inline-flex min-h-10 items-center justify-center gap-2 overflow-clip rounded-full px-5 font-semibold transition-[background] duration-100 ease-linear select-none ${variantClasses[variant]} ${className}`} type={type} onClick={handleClick} {...props} />;
+    return (
+        <button ref={buttonRef} className={`relative inline-flex min-h-10 items-center justify-center gap-2 overflow-clip rounded-full px-5 font-semibold transition-[background] duration-100 ease-linear select-none ${variantClasses[variant]} ${className}`} type={type} onMouseDown={handleMouseDown} {...props}>
+            <span className="relative z-[1] pointer-events-none inline-flex items-center justify-center gap-2">{props.children}</span>
+        </button>
+    );
 }
