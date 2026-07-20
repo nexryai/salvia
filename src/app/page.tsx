@@ -70,25 +70,6 @@ export default function Home() {
                     ))}
                 </section>
             </main>
-            <aside className="hidden w-80 shrink-0 border-divider border-l px-6 py-6 xl:block">
-                <section className="rounded-2xl border border-divider bg-panel p-5 shadow-sm">
-                    <h2 className="font-bold">現在のActor</h2>
-                    <div className="mt-4 flex items-center gap-3">
-                        <Avatar name="Alice" size="lg" />
-                        <div className="min-w-0">
-                            <p className="truncate font-bold">Alice</p>
-                            <p className="truncate text-muted text-sm">@alice@example.social</p>
-                        </div>
-                    </div>
-                    <Button className="mt-4 w-full" variant="secondary">
-                        Actorを切り替える
-                    </Button>
-                </section>
-                <section className="mt-5 rounded-2xl border border-divider bg-panel p-5 shadow-sm">
-                    <h2 className="font-bold">Salviaについて</h2>
-                    <p className="mt-2 text-muted text-sm leading-6">Rosmarinusとつながる、軽量でシンプルなソーシャルクライアントです。</p>
-                </section>
-            </aside>
             <MobileNavigation />
         </div>
     );
