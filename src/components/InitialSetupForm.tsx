@@ -10,9 +10,9 @@ type Step = "username" | "passkey";
 type StepDirection = "forward" | "backward";
 type StepState = "done" | "current" | "pending";
 
-const enterClass = "transition-[transform,opacity] duration-[320ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none";
+const enterClass = "transition-[transform,opacity] duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none";
 const enterClassUp = "transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none";
-const enterClassPop = "transition-[transform,opacity] duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none";
+const enterClassPop = "transition-[transform,opacity] duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none";
 
 export function InitialSetupForm() {
     const [username, setUsername] = useState("");
@@ -71,8 +71,8 @@ export function InitialSetupForm() {
                 </div>
 
                 <ol className="mb-6 space-y-3">
-                    <StepItem label="ユーザー名を決める" number={1} state={step === "passkey" ? "done" : "current"} />
-                    <StepItem label="パスキーを登録する" number={2} state={step === "passkey" ? "current" : "pending"} />
+                    <StepItem key={`1-${step}`} label="ユーザー名を決める" number={1} state={step === "passkey" ? "done" : "current"} />
+                    <StepItem key={`2-${step}`} label="パスキーを登録する" number={2} state={step === "passkey" ? "current" : "pending"} />
                 </ol>
 
                 <SlideIn animate={hasInteracted} direction={direction} stepKey={step}>
@@ -109,7 +109,7 @@ export function InitialSetupForm() {
                                 <IconKey className="size-5" />
                                 パスキーを登録
                             </Button>
-                            <button className="block w-full text-center text-muted text-sm transition hover:text-foreground" onClick={goBack} type="button">
+                            <button className="block w-full text-center text-muted text-sm transition-transform transition-colors duration-150 hover:text-foreground active:scale-[0.97] motion-reduce:transition-none" onClick={goBack} type="button">
                                 戻る
                             </button>
                         </div>
@@ -142,30 +142,34 @@ function SlideIn({ animate, children, direction, stepKey }: { animate: boolean; 
         }
     }, []);
 
-    const hiddenTranslate = direction === "forward" ? "translate-x-3" : "-translate-x-3";
+    const hiddenTranslate = direction === "forward" ? "translate-x-5" : "-translate-x-5";
 
     return (
-        <div className={`${enterClass} ${shown ? "translate-x-0 opacity-100" : `${hiddenTranslate} opacity-0`}`} key={stepKey}>
+        <div className={`${enterClass} ${shown ? "translate-x-0 scale-100 opacity-100" : `${hiddenTranslate} scale-[0.98] opacity-0`}`} key={stepKey}>
             {children}
         </div>
     );
 }
 
 function PopIn({ children }: { children: React.ReactNode }) {
-    const [shown, setShown] = useState(false);
+    const [stage, setStage] = useState<"hidden" | "overshoot" | "settled">("hidden");
 
     useLayoutEffect(() => {
-        setShown(true);
+        setStage("overshoot");
+        const id = setTimeout(() => setStage("settled"), 200);
+        return () => clearTimeout(id);
     }, []);
 
-    return <span className={`inline-flex ${enterClassPop} ${shown ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}>{children}</span>;
+    const className = stage === "hidden" ? "scale-50 opacity-0" : stage === "overshoot" ? "scale-[1.2] opacity-100" : "scale-100 opacity-100";
+
+    return <span className={`inline-flex ${enterClassPop} ${className}`}>{children}</span>;
 }
 
 function StepItem({ label, number, state }: { label: string; number: number; state: StepState }) {
     return (
         <li className="flex items-center gap-3">
             <StepBadge number={number} state={state} />
-            <span className={`text-sm ${state === "pending" ? "text-muted" : "font-semibold"}`}>{label}</span>
+            <span className={`text-sm transition-colors duration-300 ${state === "pending" ? "text-muted" : "text-foreground font-semibold"}`}>{label}</span>
         </li>
     );
 }
@@ -173,7 +177,7 @@ function StepItem({ label, number, state }: { label: string; number: number; sta
 function StepBadge({ number, state }: { number: number; state: StepState }) {
     if (state === "done") {
         return (
-            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent text-accent-ink">
+            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent text-accent-ink ring-2 ring-accent-soft transition-[box-shadow,background-color] duration-300">
                 <PopIn>
                     <IconCircleCheck className="size-4" />
                 </PopIn>
@@ -181,7 +185,7 @@ function StepBadge({ number, state }: { number: number; state: StepState }) {
         );
     }
     if (state === "current") {
-        return <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent-soft font-bold text-accent-strong text-xs">{number}</span>;
+        return <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent-soft font-bold text-accent-strong text-xs transition-colors duration-300">{number}</span>;
     }
-    return <span className="grid size-6 shrink-0 place-items-center rounded-full border border-divider bg-background/70 font-semibold text-muted text-xs">{number}</span>;
+    return <span className="grid size-6 shrink-0 place-items-center rounded-full border border-divider bg-background/70 font-semibold text-muted text-xs transition-colors duration-300">{number}</span>;
 }
