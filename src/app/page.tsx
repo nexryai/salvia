@@ -6,7 +6,7 @@ import { NoteCard } from "@/components/NoteCard";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 
-const isSignedIn = false;
+const isSignedIn = true;
 
 const notes = [
     {
