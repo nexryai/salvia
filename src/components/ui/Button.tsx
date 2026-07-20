@@ -3,18 +3,20 @@
 import { type ButtonHTMLAttributes, type MouseEvent, useCallback, useRef } from "react";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: "primary" | "secondary" | "ghost";
+    variant?: "primary" | "secondary" | "ghost" | "link";
+    disableRipple?: boolean;
 };
 
 const variantClasses = {
     primary: "bg-accent text-accent-ink hover:bg-accent-strong active:bg-accent-strong",
     secondary: "bg-accent-soft text-accent-strong hover:bg-accent-soft-hover active:bg-accent-soft-hover",
     ghost: "text-muted hover:bg-panel-highlight hover:text-foreground active:bg-panel-highlight",
+    link: "min-h-0 rounded-none px-0 font-normal text-muted hover:text-foreground",
 };
 
 const rippleShadowRest = "rgba(0, 0, 0, 0.1)";
 
-export function Button({ className = "", type = "button", variant = "primary", onMouseDown, ...props }: ButtonProps) {
+export function Button({ className = "", disableRipple = false, type = "button", variant = "primary", onMouseDown, ...props }: ButtonProps) {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const ripplesRef = useRef<HTMLDivElement | null>(null);
 
@@ -36,6 +38,10 @@ export function Button({ className = "", type = "button", variant = "primary", o
 
     const handleMouseDown = useCallback(
         (e: MouseEvent<HTMLButtonElement>) => {
+            if (disableRipple) {
+                onMouseDown?.(e);
+                return;
+            }
             const button = buttonRef.current;
             if (!button) {
                 onMouseDown?.(e);
@@ -77,7 +83,7 @@ export function Button({ className = "", type = "button", variant = "primary", o
 
             onMouseDown?.(e);
         },
-        [onMouseDown, ensureRipples],
+        [disableRipple, onMouseDown, ensureRipples],
     );
 
     return (

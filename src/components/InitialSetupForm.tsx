@@ -109,9 +109,9 @@ export function InitialSetupForm() {
                                 <IconKey className="size-5" />
                                 パスキーを登録
                             </Button>
-                            <button className="block w-full text-center text-muted text-sm transition-transform transition-colors duration-150 hover:text-foreground active:scale-[0.97] motion-reduce:transition-none" onClick={goBack} type="button">
+                            <Button className="block w-full text-center text-sm transition-transform duration-150 active:scale-[0.97] motion-reduce:transition-none" disableRipple onClick={goBack} type="button" variant="link">
                                 戻る
-                            </button>
+                            </Button>
                         </div>
                     )}
                 </SlideIn>
