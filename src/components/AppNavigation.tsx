@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { IconBell, IconChevronRight, IconHome, IconPlus, IconSettings, IconSparkles, IconUser } from "@tabler/icons-react";
+import { IconBell, IconChevronRight, IconHome, IconPlus, IconSettings, IconSparkles, IconUserPlus } from "@tabler/icons-react";
 
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 const items = [
     { href: "/", icon: IconHome, label: "タイムライン" },
     { href: "/notifications", icon: IconBell, label: "通知" },
-    { href: "/actors", icon: IconUser, label: "アクター" },
+    { href: "/follow-requests", icon: IconUserPlus, label: "フォローリクエスト" },
     { href: "/settings", icon: IconSettings, label: "設定" },
 ];
 
@@ -16,7 +16,7 @@ export function AppNavigation() {
     return (
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-divider border-r bg-nav px-5 py-6 lg:flex lg:flex-col">
             <Link className="mb-8 flex items-center gap-3 px-3 font-bold text-xl tracking-tight" href="/">
-                <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent-strong text-accent-ink shadow-lg shadow-accent/20">
+                <span className="grid size-10 place-items-center rounded-2xl bg-linear-to-br from-accent to-accent-strong text-accent-ink shadow-lg shadow-accent/20">
                     <IconSparkles className="size-5" />
                 </span>
                 Salvia
